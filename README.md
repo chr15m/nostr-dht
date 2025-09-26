@@ -83,4 +83,6 @@ The goal of this library is to reduce centralization on events on large relays.
 
 # Eclipse Attacks
 
-The main threat to participants in any DHT is the eclipse attack. The attacker uses node IDs such that they occupy all of the closest nodes to the target. This DHT is vulnerable
+The main threat to participants in any DHT is the eclipse attack. The attacker chooses node IDs such that they occupy and control the closest nodes to the target. This DHT implementation is vulnerable in that it would be trivial to brute-force a set of relay URLs that hash to values close to a given npub.
+
+However, the design of Nostr is such that doing this is basically pointless. Because events are cryptographically signed, the worst the malicious relay set can do is not republish the events from that npub, censoring that npub from the DHT for the purposes of discovery. The npub can (and should) still redundantly publish to other reliable relays like they do now. Only discovery on this DHT is censored, and the DHT is not the only discovery mechanism. Clients using this DHT can simply fall back to the usual methods of relay discovery using e.g. NIP-65, follow lists, profiles, etc. This basically removes the incentive to mount an attack since the attack is practically ineffectual, simply re-centralizing discovery for that one npub.
