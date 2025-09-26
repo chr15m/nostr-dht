@@ -37,6 +37,16 @@ async function main() {
 main().catch(console.error);
 ```
 
+# Command-line
+
+You can also run `nostr-dht` from the command line to discover relays and find the closest ones for a given `npub`.
+
+```shell
+npx nostr-dht [npub]
+```
+
+If you don't provide an `npub`, it will use a default test `npub`.
+
 # About
 
 How it works.
