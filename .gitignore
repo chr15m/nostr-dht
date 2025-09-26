@@ -1,0 +1,4 @@
+.*.swp
+.aider*
+workspace
+node_modules
