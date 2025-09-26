@@ -33,7 +33,7 @@ Browser:
 
 ```html
 <script type="module">
-  import { discoverRelays, getClosestRelays } from 'https://cdn.jsdelivr.net/npm/nostr-dht/nostr-dht.js';
+  import { discoverRelays, getClosestRelays } from 'https://cdn.jsdelivr.net/npm/nostr-dht/nostr-dht.js'';
 
   const bootstrapRelays = ["wss://relay.damus.io", "wss://relay.snort.social", "wss://nos.lol"];
 

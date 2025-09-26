@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Nostr-DHT Demo</title>
+    <style>
+        body {
+            background-color: #222;
+            color: #eee;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        #container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: #333;
+            color: #eee;
+            border: 1px solid #555;
+            font-family: 'Courier New', Courier, monospace;
+            box-sizing: border-box;
+        }
+        #status {
+            margin-bottom: 20px;
+            min-height: 1.2em;
+        }
+        .spinner {
+            margin: 20px auto;
+            border: 3px solid transparent;
+            border-top-color: #eee;
+            border-bottom-color: #eee;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        #feed {
+            text-align: left;
+        }
+        .note {
+            padding: 10px;
+            border-bottom: 1px solid #555;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="container">
+        <h1>Nostr-DHT Demo</h1>
+        <input type="text" id="npub-input" value="npub1m2f3j22hf90mt8mw788pne6fg7c8j2mw4gd3xjsptspjdeqf05dqhr54wn">
+        <div id="status"></div>
+        <div class="spinner" id="spinner"></div>
+        <div id="feed"></div>
+    </div>
+
+    <script type="module">
+        import { discoverRelays, getClosestRelays } from './nostr-dht.js';
+
+        const bootstrapRelays = ["wss://relay.damus.io", "wss://relay.snort.social", "wss://nos.lol"];
+        
+        const npubInput = document.getElementById('npub-input');
+        const spinner = document.getElementById('spinner');
+        const statusDiv = document.getElementById('status');
+        const feedDiv = document.getElementById('feed');
+
+        let allRelays = [];
+
+        async function updateFeed() {
+            const npub = npubInput.value.trim();
+            if (!npub || allRelays.length === 0) {
+                feedDiv.innerHTML = '';
+                return;
+            }
+
+            feedDiv.innerHTML = ''; // Clear previous results
+            const closestRelays = await getClosestRelays(npub, allRelays, { n: 8 });
+
+            closestRelays.forEach(url => {
+                const noteDiv = document.createElement('div');
+                noteDiv.className = 'note';
+                noteDiv.textContent = url;
+                feedDiv.appendChild(noteDiv);
+            });
+        }
+
+        async function main() {
+            statusDiv.textContent = 'Discovering relays...';
+
+            try {
+                allRelays = await discoverRelays(bootstrapRelays);
+                statusDiv.textContent = `Discovered ${allRelays.length} relays.`;
+                await updateFeed();
+            } catch (error) {
+                console.error("Error during relay discovery:", error);
+                statusDiv.textContent = 'Error discovering relays. Check console.';
+            } finally {
+                spinner.style.display = 'none';
+            }
+        }
+
+        npubInput.addEventListener('input', updateFeed);
+
+        main();
+    </script>
+
+</body>
+</html>
