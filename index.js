@@ -172,10 +172,11 @@ if (typeof module !== 'undefined' && module.exports) {
                 sortedRelays.forEach(r => console.log(r.url));
             }
 
-            const testId = "npub1m2f3j22hf90mt8mw788pne6fg7c8j2mw4gd3xjsptspjdeqf05dqhr54wn";
+            const testId = process.argv[2] || "npub1m2f3j22hf90mt8mw788pne6fg7c8j2mw4gd3xjsptspjdeqf05dqhr54wn";
             console.log(`\nFinding the 8 closest relays for ${testId}:`);
             const closest = await getRelays(testId, relays);
             closest.forEach(r => console.log(r));
+            console.log("\nPass an npub as the first argument to find the closest relays.");
         }).catch(console.error);
     }
 }
