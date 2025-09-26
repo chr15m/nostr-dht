@@ -1,3 +1,8 @@
+// TODO
+// - [ ] implement getRelays()
+// - [ ] Filter out invalid relays during discovering
+// - [ ] Ability to pass in a previous discovery list and merge with it
+
 /**
  * Discovers Nostr relays by querying bootstrap relays for kind 10002 events.
  * @param {string[]} bootstrapRelays - An array of WebSocket URLs for bootstrap relays.
@@ -20,7 +25,7 @@ async function discoverRelays(bootstrapRelays, { timeout = 10000, limit = 1000 }
                 console.error(`Failed to connect to ${relayUrl}: ${e.message}`);
                 return resolve(new Set());
             }
-            
+
             const relaysFromThisSocket = new Set();
             let timer;
 
@@ -64,7 +69,7 @@ async function discoverRelays(bootstrapRelays, { timeout = 10000, limit = 1000 }
                 console.error(`WebSocket error on ${relayUrl}: ${err.message}`);
                 cleanUp();
             };
-            
+
             ws.onclose = () => {
                 // This ensures the promise resolves even if the connection closes unexpectedly.
                 cleanUp();
