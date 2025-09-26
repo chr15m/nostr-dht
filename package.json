@@ -2,7 +2,7 @@
   "name": "nostr-dht",
   "description": "A Nostr client library for deterministically mapping pubkeys to relays without central coordination.",
   "main": "nostr-dht.js",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "type": "module",
   "repository": "https://github.com/chr15m/nostr-dht",
   "keywords": ["nostr", "dht"],
