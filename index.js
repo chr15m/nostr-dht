@@ -193,7 +193,7 @@ async function discoverRelays(bootstrapRelays, { timeout = 10000, limit = 1000, 
  * @param {number} [options.n=8] - The number of closest relays to return.
  * @returns {Promise<string[]>} A promise that resolves to an array of the N closest relay URLs.
  */
-async function getRelays(id, relays, { n = 8 } = {}) {
+async function getClosestRelays(id, relays, { n = 8 } = {}) {
     const idHash = await sha256(id);
 
     const relaysWithDistance = relays.map(relay => {
@@ -212,7 +212,7 @@ async function getRelays(id, relays, { n = 8 } = {}) {
 
 // Export for CommonJS/Node.js and handle direct execution
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { discoverRelays, getRelays };
+    module.exports = { discoverRelays, getClosestRelays };
     // If run directly from Node.js
     if (require.main === module) {
         console.log('Running relay discovery directly...');
@@ -231,7 +231,7 @@ if (typeof module !== 'undefined' && module.exports) {
 
             const testId = process.argv[2] || "npub1m2f3j22hf90mt8mw788pne6fg7c8j2mw4gd3xjsptspjdeqf05dqhr54wn";
             console.log(`\nFinding the 8 closest relays for ${testId}:`);
-            const closest = await getRelays(testId, relays);
+            const closest = await getClosestRelays(testId, relays);
             closest.forEach(r => console.log(r));
             console.log("\nPass an npub as the first argument to find the closest relays.");
         }).catch(console.error);
