@@ -16,8 +16,6 @@ Or import from a CDN.
 
 # Use
 
-## Basic use
-
 ```javascript
 import { discoverRelays, getClosestRelays } from 'nostr-dht';
 const relays = await discoverRelays(boostrapRelays);
