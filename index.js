@@ -163,6 +163,15 @@ if (typeof module !== 'undefined' && module.exports) {
         discoverRelays(bootstrap).then(async (relays) => {
             console.log(`Discovered ${relays.length} unique relays.`);
 
+            const sortedRelays = relays.sort((a, b) => a.url.localeCompare(b.url));
+            if (sortedRelays.length > 20) {
+                sortedRelays.slice(0, 10).forEach(r => console.log(r.url));
+                console.log('...');
+                sortedRelays.slice(-10).forEach(r => console.log(r.url));
+            } else {
+                sortedRelays.forEach(r => console.log(r.url));
+            }
+
             const testId = "npub1m2f3j22hf90mt8mw788pne6fg7c8j2mw4gd3xjsptspjdeqf05dqhr54wn";
             console.log(`\nFinding the 8 closest relays for ${testId}:`);
             const closest = await getRelays(testId, relays);
