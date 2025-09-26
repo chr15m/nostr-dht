@@ -160,9 +160,13 @@ if (typeof module !== 'undefined' && module.exports) {
     if (require.main === module) {
         console.log('Running relay discovery directly...');
         const bootstrap = ["wss://relay.damus.io", "wss://relay.snort.social", "wss://nos.lol"];
-        discoverRelays(bootstrap).then(relays => {
-            console.log(`Discovered ${relays.length} unique relays:`);
-            relays.sort((a, b) => a.url.localeCompare(b.url)).forEach(r => console.log(r.url));
+        discoverRelays(bootstrap).then(async (relays) => {
+            console.log(`Discovered ${relays.length} unique relays.`);
+
+            const testId = "npub1m2f3j22hf90mt8mw788pne6fg7c8j2mw4gd3xjsptspjdeqf05dqhr54wn";
+            console.log(`\nFinding the 8 closest relays for ${testId}:`);
+            const closest = await getRelays(testId, relays);
+            closest.forEach(r => console.log(r));
         }).catch(console.error);
     }
 }
