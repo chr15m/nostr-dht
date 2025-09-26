@@ -18,10 +18,9 @@ Or import from a CDN.
 
 ## Basic use
 
-```
-// gather a list of relays from kind:10002 events
+```javascript
+import { discoverRelays, getClosestRelays } from 'nostr-dht';
 const relays = await discoverRelays(boostrapRelays);
-// perform a lookup for the npub relay set over all relays
 const closestRelays = await getClosestRelays(npub, relays);
 ```
 
