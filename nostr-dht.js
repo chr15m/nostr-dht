@@ -240,5 +240,9 @@ if (typeof module !== 'undefined' && module.exports) {
     }
 }
 
+if (typeof window !== 'undefined' && !(typeof module !== 'undefined' && module.exports)) {
+    window.NostrDHT = { discoverRelays, getClosestRelays };
+}
+
 // Export for ES modules (browser and Node.js)
 export { discoverRelays, getClosestRelays };
