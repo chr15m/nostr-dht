@@ -234,7 +234,8 @@ if (typeof module !== 'undefined' && module.exports) {
             console.log(`\nFinding the 8 closest relays for ${testId}:`);
             const closest = await getClosestRelays(testId, relays);
             closest.forEach(r => console.log(r));
-            console.log("\nPass an npub as the first argument to find the closest relays.");
+            console.log("\nTo find relays for a specific npub, pass it as an argument, e.g.:");
+            console.log("npx nostr-dht npub1...");
         }).catch(console.error);
     }
 }
