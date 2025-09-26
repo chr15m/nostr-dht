@@ -60,6 +60,12 @@ function isValidRelayUrl(url) {
             return false;
         }
 
+        // Hostname must be a valid FQDN (contains a dot) or an IP address.
+        // This filters out single-label hostnames like `wss://example/`
+        if (!hostname.includes('.') && !hostname.startsWith('[')) {
+            return false;
+        }
+
         // Filter out .onion addresses
         if (hostname.endsWith('.onion')) {
             return false;
@@ -131,8 +137,16 @@ async function discoverRelays(bootstrapRelays, { timeout = 10000, limit = 1000 }
                             const eventData = data[2];
                             if (eventData.kind === 10002) {
                                 eventData.tags.forEach(tag => {
-                                    if (tag[0] === 'r' && tag[1] && isValidRelayUrl(tag[1])) {
-                                        relaysFromThisSocket.add(tag[1]);
+                                    if (tag[0] === 'r' && tag[1]) {
+                                        let url = tag[1];
+                                        // Normalize URL by removing trailing slash for deduplication
+                                        if (url.endsWith('/')) {
+                                            url = url.slice(0, -1);
+                                        }
+
+                                        if (isValidRelayUrl(url)) {
+                                            relaysFromThisSocket.add(url);
+                                        }
                                     }
                                 });
                             }
