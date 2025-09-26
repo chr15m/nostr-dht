@@ -1,5 +1,3 @@
-// TODO
-// - [ ] Ability to pass in a previous discovery list and merge with it
 
 /**
  * Calculates the SHA-256 hash of a string in a way that is compatible with both Node.js and browsers.
@@ -95,9 +93,10 @@ function isValidRelayUrl(url) {
  * @param {object} [options] - Optional parameters.
  * @param {number} [options.timeout=10000] - Time in milliseconds to wait for each relay to respond.
  * @param {number} [options.limit=1000] - The number of kind 10002 events to request from each relay.
+ * @param {Array<{url: string, hash: Uint8Array}>} [options.previousRelays=[]] - A previously discovered list of relays to merge with.
  * @returns {Promise<Array<{url: string, hash: Uint8Array}>>} A promise that resolves to an array of unique discovered relay URLs with their hashes.
  */
-async function discoverRelays(bootstrapRelays, { timeout = 10000, limit = 1000 } = {}) {
+async function discoverRelays(bootstrapRelays, { timeout = 10000, limit = 1000, previousRelays = [] } = {}) {
     // In Node.js, WebSocket is not global and needs to be required.
     // In browsers, WebSocket is global.
     const WebSocketImpl = (typeof WebSocket === 'undefined') ? require('ws') : WebSocket;
@@ -174,7 +173,7 @@ async function discoverRelays(bootstrapRelays, { timeout = 10000, limit = 1000 }
     const promises = bootstrapRelays.map(queryRelay);
     const results = await Promise.all(promises);
 
-    const discoveredRelays = new Set();
+    const discoveredRelays = new Set(previousRelays.map(r => r.url));
     results.forEach(resultSet => {
         resultSet.forEach(relay => discoveredRelays.add(relay));
     });
