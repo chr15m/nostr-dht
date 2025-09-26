@@ -15,7 +15,26 @@ npm i nostr-dht
 # Use
 
 ```javascript
+const { discoverRelays, getRelays } = require('nostr-dht');
 
+async function main() {
+    const bootstrapRelays = ["wss://relay.damus.io", "wss://relay.snort.social", "wss://nos.lol"];
+
+    // Discover relays
+    const relays = await discoverRelays(bootstrapRelays, /* { previousRelays: cachedRelays } */);
+
+    // Cache relays
+    // localStorage["relays"] = JSON.stringify(relays);
+
+    // Find the 8 closest relays for a given npub
+    const npub = "npub1m2f3j22hf90mt8mw788pne6fg7c8j2mw4gd3xjsptspjdeqf05dqhr54wn";
+    const closestRelays = await getRelays(npub, allRelays, { n: 8 });
+
+    console.log(`\nTop 8 relays for ${npub}:`);
+    closestRelays.forEach(url => console.log(url));
+}
+
+main().catch(console.error);
 ```
 
 # About
