@@ -1,5 +1,4 @@
 // TODO
-// - [ ] Filter out invalid relays during discovering
 // - [ ] Ability to pass in a previous discovery list and merge with it
 
 /**
@@ -36,6 +35,51 @@ function xorDistance(buf1, buf2) {
         distance = (distance << 8n) + BigInt(xor);
     }
     return distance;
+}
+
+/**
+ * Validates a relay URL against a set of criteria.
+ * @param {string} url - The URL to validate.
+ * @returns {boolean} True if the URL is valid, false otherwise.
+ */
+function isValidRelayUrl(url) {
+    try {
+        const urlObject = new URL(url);
+        const { protocol, hostname, pathname } = urlObject;
+
+        // Must be a secure websocket protocol
+        if (protocol !== 'wss:') {
+            return false;
+        }
+
+        // Filter out non-public relays
+        if (hostname === 'localhost' || hostname.endsWith('.local') || hostname === '[::1]') {
+            return false;
+        }
+        if (/^(127\.|10\.|192\.168\.)/.test(hostname)) {
+            return false;
+        }
+
+        // Filter out .onion addresses
+        if (hostname.endsWith('.onion')) {
+            return false;
+        }
+
+        // Filter out URLs with npub1 or nprofile
+        if (url.includes('npub1') || url.includes('nprofile')) {
+            return false;
+        }
+
+        // Filter out aggregator URLs that contain other URL schemes
+        if (pathname.includes('://')) {
+            return false;
+        }
+
+        return true;
+    } catch (e) {
+        // Malformed URL
+        return false;
+    }
 }
 
 
@@ -87,7 +131,7 @@ async function discoverRelays(bootstrapRelays, { timeout = 10000, limit = 1000 }
                             const eventData = data[2];
                             if (eventData.kind === 10002) {
                                 eventData.tags.forEach(tag => {
-                                    if (tag[0] === 'r' && tag[1] && (tag[1].startsWith('wss://') || tag[1].startsWith('ws://'))) {
+                                    if (tag[0] === 'r' && tag[1] && isValidRelayUrl(tag[1])) {
                                         relaysFromThisSocket.add(tag[1]);
                                     }
                                 });
