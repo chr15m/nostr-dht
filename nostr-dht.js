@@ -211,34 +211,40 @@ async function getClosestRelays(id, relays, { n = 8 } = {}) {
     return relaysWithDistance.slice(0, n).map(r => r.url);
 }
 
-// Export for CommonJS/Node.js and handle direct execution
+// Export for CommonJS/Node.js
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = { discoverRelays, getClosestRelays };
-    // If run directly from Node.js
-    if (require.main === module) {
-        console.log('Running relay discovery directly...');
-        const bootstrap = ["wss://relay.damus.io", "wss://relay.snort.social", "wss://nos.lol"];
-        discoverRelays(bootstrap).then(async (relays) => {
-            console.log(`Discovered ${relays.length} unique relays.`);
-
-            const sortedRelays = relays.sort((a, b) => a.url.localeCompare(b.url));
-            if (sortedRelays.length > 20) {
-                sortedRelays.slice(0, 10).forEach(r => console.log(r.url));
-                console.log('...');
-                sortedRelays.slice(-10).forEach(r => console.log(r.url));
-            } else {
-                sortedRelays.forEach(r => console.log(r.url));
-            }
-
-            const testId = process.argv[2] || "npub1m2f3j22hf90mt8mw788pne6fg7c8j2mw4gd3xjsptspjdeqf05dqhr54wn";
-            console.log(`\nFinding the 8 closest relays for ${testId}:`);
-            const closest = await getClosestRelays(testId, relays);
-            closest.forEach(r => console.log(r));
-            console.log("\nTo find relays for a specific npub, pass it as an argument, e.g.:");
-            console.log("npx nostr-dht npub1...");
-        }).catch(console.error);
-    }
 }
+
+// If run directly from Node.js
+(async () => {
+    if (typeof process !== 'undefined' && process.argv[1]) {
+        const { fileURLToPath } = await import('url');
+        if (process.argv[1] === fileURLToPath(import.meta.url)) {
+            console.log('Running relay discovery directly...');
+            const bootstrap = ["wss://relay.damus.io", "wss://relay.snort.social", "wss://nos.lol"];
+            discoverRelays(bootstrap).then(async (relays) => {
+                console.log(`Discovered ${relays.length} unique relays.`);
+
+                const sortedRelays = relays.sort((a, b) => a.url.localeCompare(b.url));
+                if (sortedRelays.length > 20) {
+                    sortedRelays.slice(0, 10).forEach(r => console.log(r.url));
+                    console.log('...');
+                    sortedRelays.slice(-10).forEach(r => console.log(r.url));
+                } else {
+                    sortedRelays.forEach(r => console.log(r.url));
+                }
+
+                const testId = process.argv[2] || "npub1m2f3j22hf90mt8mw788pne6fg7c8j2mw4gd3xjsptspjdeqf05dqhr54wn";
+                console.log(`\nFinding the 8 closest relays for ${testId}:`);
+                const closest = await getClosestRelays(testId, relays);
+                closest.forEach(r => console.log(r));
+                console.log("\nTo find relays for a specific npub, pass it as an argument, e.g.:");
+                console.log("npx nostr-dht npub1...");
+            }).catch(console.error);
+        }
+    }
+})();
 
 if (typeof window !== 'undefined' && !(typeof module !== 'undefined' && module.exports)) {
     window.NostrDHT = { discoverRelays, getClosestRelays };
