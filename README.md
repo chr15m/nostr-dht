@@ -33,7 +33,7 @@ Browser:
 
 ```html
 <script type="module">
-  import { discoverRelays, getClosestRelays } from 'https://cdn.jsdelivr.net/npm/nostr-dht/nostr-dht.js'';
+  import { discoverRelays, getClosestRelays } from 'https://cdn.jsdelivr.net/npm/nostr-dht@latest/nostr-dht.js';
 
   const bootstrapRelays = ["wss://relay.damus.io", "wss://relay.snort.social", "wss://nos.lol"];
 
@@ -52,9 +52,7 @@ Browser:
 </script>
 ```
 
-In Node.js the code is the same but use `import * from 'nostr-dht';` instead.
-
-Or use require: `const dht = require('nostr-dht')`.
+In Node.js the code is the same but use `import { discoverRelays, getClosestRelays }  from 'nostr-dht';` instead.
 
 ## Command-line
 
