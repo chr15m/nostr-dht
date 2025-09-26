@@ -8,7 +8,7 @@
 async function sha256(str) {
     if (typeof WebSocket === 'undefined') {
         // Node.js environment
-        const crypto = require('crypto');
+        const crypto = await import('crypto');
         const hash = crypto.createHash('sha256');
         hash.update(str);
         return new Uint8Array(hash.digest());
@@ -98,9 +98,9 @@ function isValidRelayUrl(url) {
  * @returns {Promise<Array<{url: string, hash: Uint8Array}>>} A promise that resolves to an array of unique discovered relay URLs with their hashes.
  */
 async function discoverRelays(bootstrapRelays, { timeout = 10000, limit = 1000, previousRelays = [] } = {}) {
-    // In Node.js, WebSocket is not global and needs to be required.
+    // In Node.js, WebSocket is not global and needs to be imported.
     // In browsers, WebSocket is global.
-    const WebSocketImpl = (typeof WebSocket === 'undefined') ? require('ws') : WebSocket;
+    const WebSocketImpl = (typeof WebSocket === 'undefined') ? (await import('ws')).default : WebSocket;
 
     const queryRelay = (relayUrl) => {
         return new Promise((resolve) => {
@@ -239,3 +239,6 @@ if (typeof module !== 'undefined' && module.exports) {
         }).catch(console.error);
     }
 }
+
+// Export for ES modules (browser and Node.js)
+export { discoverRelays, getClosestRelays };
